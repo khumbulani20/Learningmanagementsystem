@@ -1,6 +1,7 @@
 package org.lms.model;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -23,7 +24,7 @@ public static Connection Connect()
 		//load driver
 		Class.forName("com.mysql.cj.jdbc.Driver");
 		
-		con=DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/lms?"+"user=root&password=");
+		con=DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/lms?"+"user=root&password=mbeki2019");
 		return con;
 		
 		
@@ -35,7 +36,7 @@ public static Connection Connect()
 }
 public List<Course> courseList(Connection con)
 {
-	String query="select * from courses"; 
+	String query="select * from course"; 
 	ResultSet rs=null;
 	Statement st;
 	List<Course> courses= new ArrayList<Course>();
@@ -48,7 +49,7 @@ public List<Course> courseList(Connection con)
 			  Course course= new Course(rs.getString("courseCode"), rs.getString("courseName"),rs.getString("description"),rs.getInt("capacity"));
 			  courses.add(course); 
 		}  
-
+		System.out.print(  "List displayed ");
 	} catch (SQLException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -59,8 +60,38 @@ public List<Course> courseList(Connection con)
 	return courses;
 }
 
-public void addCourse()
+public static Boolean addCourse(Course course, Connection con)
 {
+	//insert into course values(courseCode, courseName, description, capacity)
+	/*String query="insert into course values('"+course.getCourseCode()+"','"+course.getCourseName()+"','"+course.getDescription()+"',"+course.getCapacity()+")";
+	try {
+		Statement st = con.createStatement();
+		st.execute(query);
+		System.out.print(course+"course added ");
+		
+		
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	*/
+	
+	String query ="insert into course(courseCode, courseName, description, capacity) values(?,?,?,?)";
+	try {
+		PreparedStatement st=con.prepareStatement(query);
+		st.setString(1, course.getCourseCode());
+		st.setString(2, course.getCourseName());
+		st.setString(3, course.getDescription());
+		st.setInt(4, course.getCapacity());
+		return st.execute();
+		
+		
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		return false;
+	}
+	 
 	
 }
 

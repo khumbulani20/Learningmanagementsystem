@@ -16,7 +16,7 @@ public class SiteController extends HttpServlet {
      */
     public SiteController() {
         super();
-        // TODO Auto-generated constructor stub
+       
     }
 
 	/**
@@ -70,6 +70,7 @@ public class SiteController extends HttpServlet {
 }
 	public void updateCoursePage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setAttribute("operation", "updateCourse");
+		
 		request.getRequestDispatcher("UpdateCourse.jsp").forward(request, response);
 }
 	

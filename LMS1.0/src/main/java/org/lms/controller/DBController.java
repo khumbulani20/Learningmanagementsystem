@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 
+import org.lms.entity.Course;
 import org.lms.model.*;
 
 /**
@@ -15,13 +16,15 @@ import org.lms.model.*;
  */
 public class DBController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private LMSDatabase db;
+	LMSDatabase db;
+	 Connection con;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
     public DBController() {
-      db= new LMSDatabase();
+     db= new LMSDatabase();
+        con=LMSDatabase.Connect();
     }
 
 	/**
@@ -33,12 +36,25 @@ public class DBController extends HttpServlet {
 		switch(operation)
 		{
 		case "courseList":
-		 Connection con=LMSDatabase.Connect();
+		 
 		 request.setAttribute("courseList", db.courseList(con));
 		 request.getRequestDispatcher("CourseList.jsp").forward(request, response);
 			break;
 		case "addCourse":
-		 
+		 //get data from the form
+			
+			String courseCode= request.getParameter("courseCode");
+			String courseName= request.getParameter("courseName");
+			String description= request.getParameter("description");
+			int capacity= Integer.parseInt(request.getParameter("capacity"));
+			
+			Course course=new Course(courseCode,courseName,description,capacity);
+			
+			LMSDatabase.addCourse(course, con);
+			
+			break;
+		case "addUser":
+			 
 			break;
 		case "deleteCourse":
 			 
