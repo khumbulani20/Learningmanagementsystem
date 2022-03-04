@@ -6,16 +6,21 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Connection;
+
+import org.lms.entity.Course;
+import org.lms.model.LMSDatabase;
 
 @WebServlet("/SiteController")
 public class SiteController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+	private LMSDatabase db;
+	private Connection con;
     /**
      * @see HttpServlet#HttpServlet()
      */
     public SiteController() {
-        super();
+        db= new LMSDatabase();
        
     }
 
@@ -37,7 +42,7 @@ public class SiteController extends HttpServlet {
 		case "deleteCourse":
 			deleteCoursePage(request, response);
 			break;
-		case "updateCourse":
+		case "updateCoursePage":
 			updateCoursePage(request, response);
 			break;
 		
@@ -69,7 +74,15 @@ public class SiteController extends HttpServlet {
 		request.getRequestDispatcher("DeleteCourse.jsp").forward(request, response);
 }
 	public void updateCoursePage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.setAttribute("operation", "updateCourse");
+		//request.setAttribute("operation", "updateCourse");
+		
+		//get courseCode
+		String courseID= request.getParameter("courseCode");
+		
+		//get course from db
+		Course cou=db.getCourseByCode(courseID);
+		//forward to updatePage
+		request.setAttribute("course", cou);
 		
 		request.getRequestDispatcher("UpdateCourse.jsp").forward(request, response);
 }

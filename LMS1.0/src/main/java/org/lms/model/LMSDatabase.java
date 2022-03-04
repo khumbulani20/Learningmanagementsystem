@@ -11,12 +11,26 @@ import java.util.List;
 import org.lms.entity.*;
 public class LMSDatabase {
 	
- 
- 
-
+private Connection con; 
  
 
-public static Connection Connect()
+ 
+
+public LMSDatabase() {
+	try {
+		//load driver
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		
+		con=DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/lms?"+"user=root&password=mbeki2019");
+		 
+		
+		
+	} catch (ClassNotFoundException | SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+/*public static Connection Connect()
 {
 	Connection con=null;
 	
@@ -33,8 +47,8 @@ public static Connection Connect()
 		e.printStackTrace();
 	}
 	return con;
-}
-public List<Course> courseList(Connection con)
+}*/
+public List<Course> courseList()
 {
 	String query="select * from course"; 
 	ResultSet rs=null;
@@ -60,7 +74,7 @@ public List<Course> courseList(Connection con)
 	return courses;
 }
 
-public static Boolean addCourse(Course course, Connection con)
+public  Boolean addCourse(Course course)
 {
 	//insert into course values(courseCode, courseName, description, capacity)
 	/*String query="insert into course values('"+course.getCourseCode()+"','"+course.getCourseName()+"','"+course.getDescription()+"',"+course.getCapacity()+")";
@@ -95,12 +109,67 @@ public static Boolean addCourse(Course course, Connection con)
 	
 }
 
-public void deleteCourse()
+public void deleteCourse(String courseCode)
 {
+	String query="delete from course where courseCode= ?";
+	PreparedStatement st= null;
+	try {
+		st=con.prepareStatement(query);
+		st.setString(1, courseCode);
+		st.execute();
+		System.out.print("course deleted");
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+public void updateCourse(Course updatedCourse,String courseID)
+{
+	PreparedStatement st=null;
+	String courseCode=updatedCourse.getCourseCode();
+	String courseName= updatedCourse.getCourseName();
+	String description=updatedCourse.getDescription();
+	int capacity=updatedCourse.getCapacity();
+	//create a sql statement
+	String query="update course set courseCode=?, courseName=?,description=?,capacity=? where courseCode=?";
+	
+	try {
+		st= con.prepareStatement(query);
+		
+		st.setString(1, courseCode);
+		st.setString(2, courseName);
+		st.setString(3, description);
+		st.setInt(4, capacity);
+		st.setString(5, courseID);
+		st.execute();
+		System.out.print("course updated to  "+updatedCourse);
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 	
 }
-public void updateCourse()
-{
+public Course getCourseByCode(String courseCode ) {
+	Course course= null;
+	
+	String query= "select * from course where courseCode='"+courseCode+"'";
+	
+try {
+	Statement st = con.createStatement();
+
+	ResultSet rs= st.executeQuery(query);
+	if(rs.next())
+	{
+		course= new Course(rs.getString("courseCode"),rs.getString("courseName"),rs.getString("description"),rs.getInt("capacity"));
+	}
+	return course;
+	
+} catch (SQLException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+	return null;
+ 
 	
 }
  
